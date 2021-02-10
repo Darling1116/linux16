@@ -6,6 +6,9 @@
 
 void handle_child(session_t *sess);
 
+void ftp_reply(session_t *sess, int code, const char *text);
+//ªÿ∏¥–≈œ¢
+
 
 #endif /* _FTP_PROTO_H_ */
 

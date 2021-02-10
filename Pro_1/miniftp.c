@@ -3,10 +3,18 @@
 #include "session.h"
 
 int main (int argc ,  char *argv[ ]){
+
+    //获取当前用户的id号
+	if(getuid( ) != 0){
+		//当前用户不是root用户
+		printf("miniftp : must be started as root.\n");
+		exit(EXIT_FAILURE);
+	}
+	
 	
 	//主函数先建立控制连接
 	session_t sess = {
-		-1
+		-1, -1, "", "", ""
 		//初始化内部成员变量
 	};
 	//sess控制连接内部的成员变量初始化为-1
@@ -20,8 +28,8 @@ int main (int argc ,  char *argv[ ]){
 	socklen_t addrlen;//地址长度
 
 	while(1){
-		if(sockConn = accept(listenfd,(struct sockaddr*)&addrCli,&addrlen) < 0)
-			ERR_EXIT("accept");//接受链接失败
+		if((sockConn = accept(listenfd,(struct sockaddr*)&addrCli,&addrlen)) < 0)
+			ERR_EXIT("accept");//接受连接失败
 
 		pid_t pid = fork( );//创建进程
 

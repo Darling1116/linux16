@@ -6,11 +6,21 @@ void begin_session(session_t *sess){
 	if(pid == -1)
 		ERR_EXIT("fork");
 	if(pid == 0){
-		handle_child(sess);	
 		//ftp的服务进程
+		handle_child(sess);	   
 	}
 	else{
-		handle_parent(sess);
-		//nobody进程
+	    //nobody进程
+
+		//把root进程更改为nobody
+		struct passwd *pw = getpwnam("nobody");
+		if(pw == NULL)
+			ERR_EXIT("getpwname");
+		if(setegid(pw->pw_gid) < 0)
+			ERR_EXIT("setegid");
+		if(seteuid(pw->pw_uid) < 0)
+			ERR_EXIT("seteuid");
+
+		handle_parent(sess);   
 	}
 }

@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <malloc.h>
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -14,6 +15,8 @@
 #include <pwd.h>
 #include <shadow.h>
 #include <crypt.h>
+
+#include <dirent.h>
 
 #define ERR_EXIT(m)  do{ perror(m); exit(EXIT_FAILURE); } while(0)
 

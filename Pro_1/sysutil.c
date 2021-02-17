@@ -27,4 +27,26 @@ int tcp_server (const char *host, unsigned short port){
 
 	return listenfd;
 	//返回监听套接字
+}
+
+
+
+int tcp_client( ){
+	int sock;//客户端创建套接字
+	if((sock = socket( AF_INET, SOCK_STREAM, 0)) < 0){
+		ERR_EXIT("tcp_client");
 	}
+	return sock;
+}
+
+
+char *statbuf_get_perms(struct stat *sbuf){
+	
+
+}
+
+
+char *statbuf_get_pdate(struct stat *sbuf){
+
+
+}

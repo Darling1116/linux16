@@ -11,6 +11,13 @@ typedef struct session
 	char cmdline[MAX_COMMAND_LINE];//命令行
 	char cmd[MAX_COMMAND];
 	char arg[MAX_ARG];
+
+	//ftp的协议状态
+	int is_ascii;
+
+	//数据连接
+	struct sockaddr_in *port_addr;
+	int data_fd;
 }session_t;
 
 void begin_session(session_t *sess);

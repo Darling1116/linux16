@@ -23,11 +23,14 @@ int main (int argc ,  char *argv[ ]){
 		NULL, -1, -1,
 		//数据连接
 
+		-1, -1
+		//父子进程通道
+
 	};
 	//sess控制连接内部的成员变量初始化为-1
 	
 
-	int listenfd = tcp_server("192.168.109.136",1272);
+	int listenfd = tcp_server("192.168.109.137",1272);
 	//创建一个监听套接字
 	
 	int sockConn;//新的套接字

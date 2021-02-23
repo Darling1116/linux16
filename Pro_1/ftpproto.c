@@ -190,28 +190,6 @@ static void do_type(session_t *sess){
 
 
 
-//主动连接
-static void do_port(session_t *sess){
-	//port  192,168,109,1,7,50
-	unsigned int v[6] = {0};
-	sscanf(sess->arg, "%u,%u,%u,%u,%u,%u", &v[0],&v[1],&v[2],&v[3],&v[4],&v[5]);//格式化
-
-	sess->port_addr = (struct sockaddr_in *)malloc(sizeof(struct sockaddr_in));
-
-	unsigned char *p = (unsigned char *)&sess->port_addr->sin_port;//指向端口空间
-	p[0] = v[4];
-	p[1] = v[5];
-
-	p = (unsigned char *)&sess->port_addr->sin_addr;
-	p[0] = v[0];
-	p[1] = v[1];
-	p[2] = v[2];
-	p[3] = v[3];
-
-	sess->port_addr->sin_family = AF_INET;
-	ftp_reply(sess, FTP_PROTOK, "command successful. Consider using PASV.");
-}
-
 
 //判断主动模式是否被激活
 int port_active(session_t *sess){
@@ -328,7 +306,31 @@ static void do_list(session_t *sess){
 
 
 
+//主动连接
+static void do_port(session_t *sess){
+	//port  192,168,109,1,7,50
+	unsigned int v[6] = {0};
+	sscanf(sess->arg, "%u,%u,%u,%u,%u,%u", &v[0],&v[1],&v[2],&v[3],&v[4],&v[5]);//格式化
 
+	sess->port_addr = (struct sockaddr_in *)malloc(sizeof(struct sockaddr_in));
+
+	unsigned char *p = (unsigned char *)&sess->port_addr->sin_port;//指向端口空间
+	p[0] = v[4];
+	p[1] = v[5];
+
+	p = (unsigned char *)&sess->port_addr->sin_addr;
+	p[0] = v[0];
+	p[1] = v[1];
+	p[2] = v[2];
+	p[3] = v[3];
+
+	sess->port_addr->sin_family = AF_INET;
+	ftp_reply(sess, FTP_PROTOK, "command successful. Consider using PASV.");
+}
+
+
+
+//被动连接
 static void do_pasv(session_t *sess){
 
 	char ip[16] = "192.168.109.136";//服务器的IP地址

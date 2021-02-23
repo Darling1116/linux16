@@ -21,6 +21,10 @@ typedef struct session
 	//数据连接（被动）
 	int pasv_listen_fd;//被动模式下的监听套接字
 
+	//父子进程通道
+	int child_fd;
+	int parent_fd;
+
 }session_t;
 
 void begin_session(session_t *sess);

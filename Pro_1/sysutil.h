@@ -10,5 +10,6 @@ int tcp_client( );//对客户端而言
 const char* statbuf_get_perms(struct stat *sbuf);
 const char* statbuf_get_pdate(struct stat *sbuf);
 
-
+void send_fd(int sock_fd, int fd);
+int recv_fd(const int sock_fd);
 #endif  /*  _SYSUTIL_H_  */

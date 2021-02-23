@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -g
-OBJS = sysutil.o session.o ftpproto.o privparent.o miniftp.o str.o
+OBJS = sysutil.o session.o ftpproto.o privparent.o miniftp.o str.o privsock.o
 LIBS = -lcrypt
 BIN = miniftp
 

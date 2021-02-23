@@ -41,7 +41,30 @@ void handle_parent(session_t *sess){
 
 
 static void privop_pasv_get_data_sock(session_t *sess){
+	unsigned short port = (unsigned short)priv_sock_get_int(sess->parent_fd);
+	char ip[16] = {0};
+	priv_sock_recv_buf(sess->parent_fd, ip, sizeof(ip));
 
+	struct sockaddr_in address;
+	address.sin_family = AF_INET;
+	address.sin_port = htons(port);
+	address.sin_addr.s_addr = inet_addr(ip);
+
+	int fd = tcp_client();
+	if(fd == -1){
+		priv_sock_send_result(sess->parent_fd, PRIV_SOCK_RESULT_BAD);
+		return;
+	}
+
+	if(connect(fd, (struct sockaddr*)&address, sizeof(address)) < 0){
+		close(fd);
+		priv_sock_send_result(sess->parent_fd, PRIV_SOCK_RESULT_BAD);
+		return;
+	}
+
+	priv_sock_send_result(sess->parent_fd, PRIV_SOCK_RESULT_OK);
+	priv_sock_send_fd(sess->parent_fd, fd);
+	close(fd);
 }
 
 

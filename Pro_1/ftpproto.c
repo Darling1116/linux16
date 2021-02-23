@@ -1,6 +1,8 @@
 #include "ftpproto.h"
 #include "ftpcodes.h"
 #include "str.h"
+#include "sysutil.h"
+#include "privsock.h"
 
 void ftp_reply(session_t *sess, int code, const char *text){
 	char buf[MAX_BUFFER_SIZE] = {0};
@@ -193,15 +195,25 @@ static void do_type(session_t *sess){
 
 //判断主动模式是否被激活
 int port_active(session_t *sess){
-	if(sess->port_addr)
+	if(sess->port_addr){/////////
+		if(pasv_active(sess)){
+			fprintf(stderr,"both port and pasv are active");
+			exit(EXIT_FAILURE);
+		}
 		return 1;
+	}
 	return 0;
 }
 
 //判断被动模式是否被激活
 int pasv_active(session_t *sess){
-	if(sess->pasv_listen_fd != -1)
+	if(sess->pasv_listen_fd != -1){////////
+		if(port_active(sess)){
+			fprintf(stderr,"both port and pasv are active");
+			exit(EXIT_FAILURE);
+		}
 		return 1;
+	}
 	return 0;//没有被激活
 }
 
@@ -216,12 +228,32 @@ int get_transfer_fd(session_t *sess){
 
 	int ret = 1;
 	if(port_active(sess)){
+		/*
 		int sock = tcp_client( );//主动连接：客户端创建套接字////////
 		if(connect(sock, (struct sockaddr*)sess->port_addr, sizeof(struct sockaddr)) < 0){
 			ret = 0;//连接套接字
 		}
 		else{
 			sess->data_fd = sock;
+		}
+		*/
+
+		////////    ftp服务进程向nobody进程发起请求（连接）
+		priv_sock_send_cmd(sess->child_fd, PRIV_SOCK_GET_DATA_SOCK);
+		//客户端向服务器发送端口号和ip
+		unsigned short port = ntohs(sess->port_addr->sin_port);
+		char *ip = inet_ntoa(sess->port_addr->sin_addr);
+
+		////////	发送port
+		priv_sock_send_int(sess->child_fd, (int)port);
+		priv_sock_send_buf(sess->child_fd, ip, strlen(ip));
+
+		char res = priv_sock_get_result(sess->child_fd);
+		if(res == PRIV_SOCK_RESULT_BAD)
+			ret = 0;
+		else if(res == PRIV_SOCK_RESULT_OK){
+			sess->data_fd = priv_sock_recv_fd(sess->child_fd);
+			ret = 1;
 		}
 	}
 
@@ -333,7 +365,7 @@ static void do_port(session_t *sess){
 //被动连接
 static void do_pasv(session_t *sess){
 
-	char ip[16] = "192.168.109.136";//服务器的IP地址
+	char ip[16] = "192.168.109.137";//服务器的IP地址
 	//被动连接的端口号是自动生成的
 	sess->pasv_listen_fd = tcp_server(ip, 0);//port为0代表生成临时端口号
 

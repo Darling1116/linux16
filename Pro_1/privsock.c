@@ -40,7 +40,7 @@ void priv_sock_set_child_context(session_t *sess){
 	
 }
 
-
+//∑¢ÀÕ£®Ω” ‹£©√¸¡Ó
 void priv_sock_send_cmd(int fd, char cmd){
 	int ret = send(fd, &cmd, sizeof(cmd), 0);
 	if(ret != sizeof(cmd)){
@@ -127,10 +127,9 @@ void priv_sock_recv_buf(int fd, char *buf, unsigned int len){
 }
 
 void priv_sock_send_fd(int sock_fd, int fd){
-	
-
+	send_fd(sock_fd, fd);
 }
-void priv_sock_recv_fd(int sock_fd){
 
-
+int priv_sock_recv_fd(int sock_fd){
+	return recv_fd(sock_fd);
 }

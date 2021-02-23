@@ -36,5 +36,5 @@ void priv_sock_recv_buf(int fd, char *buf, unsigned int len);
 
 //发送（接受）文件描述符
 void priv_sock_send_fd(int sock_fd, int fd);
-void priv_sock_recv_fd(int sock_fd);
+int priv_sock_recv_fd(int sock_fd);
 #endif /* _PRIV_SOCK_H_ */

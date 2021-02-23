@@ -32,21 +32,76 @@ int tcp_server (const char *host, unsigned short port){
 
 
 int tcp_client( ){
-	int sock;//客户端创建套接字
+	int sock;//创建套接字
 	if((sock = socket( AF_INET, SOCK_STREAM, 0)) < 0){
 		ERR_EXIT("tcp_client");
 	}
+	/*struct sockaddr_in address;
+	address.sin_family = AF_INET;
+	address.sin_addr.s_addr = INADDR_ANY;
+	address.sin_port = htohs(20);
+	bind(sock,(struct sockaddr*)&address, sizeof(struct sockaddr)) < 0)
+		ERR_EXIT("bind 20");
+	*/
 	return sock;
 }
 
 
-char *statbuf_get_perms(struct stat *sbuf){
-	
+const char *statbuf_get_perms(struct stat *sbuf){
+	static char perms[] = "--------------";
+	mode_t mode = sbuf->st_mode;
+	switch(mode & S_IFMT){
+		case S_IFSOCK:
+			perms[0] = 's';
+			break;
+		case S_IFLNK:
+			perms[0] = 'l';
+			break;
+		case S_IFREG:
+			perms[0] = '-';
+			break;
+		case S_IFBLK:
+			perms[0] = 'b';
+			break;
+		case S_IFDIR:
+			perms[0] = 'd';
+			break;
+		case S_IFCHR:
+			perms[0] = 'c';
+			break;
+		case S_IFIFO:
+			perms[0] = 'p';
+			break;
+	}
+	if(mode & S_IRUSR)
+		perms[1] = 'r';
+	if(mode & S_IWUSR)
+		perms[1] = 'w';
+	if(mode & S_IXUSR)
+		perms[1] = 'x';
 
+	if(mode & S_IRGRP)
+		perms[1] = 'r';
+	if(mode & S_IWGRP)
+		perms[1] = 'w';
+	if(mode & S_IXGRP)
+		perms[1] = 'x';
+
+	if(mode & S_IROTH)
+		perms[1] = 'r';
+	if(mode & S_IWOTH)
+		perms[1] = 'w';
+	if(mode & S_IXOTH)
+		perms[1] = 'x';
+	
+	return perms;
 }
 
 
-char *statbuf_get_pdate(struct stat *sbuf){
-
-
+const char *statbuf_get_date(struct stat *sbuf){
+	static char datebuf[64] = {0};
+	time_t file_time = sbuf->st_mtime;
+	struct tm *ptm = localtime(&file_time);
+	strftime(datebuf, 64, "%b %e %H:%M", ptm);//时间格式化
+	return datebuf;
 }

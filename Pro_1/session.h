@@ -15,9 +15,12 @@ typedef struct session
 	//ftp的协议状态
 	int is_ascii;
 
-	//数据连接
+	//数据连接（主动）
 	struct sockaddr_in *port_addr;
 	int data_fd;
+	//数据连接（被动）
+	int pasv_listen_fd;//被动模式下的监听套接字
+
 }session_t;
 
 void begin_session(session_t *sess);

@@ -64,12 +64,12 @@ void handle_child(session_t *sess){
 			exit(EXIT_SUCCESS);
 		else 
 			str_trim_crlf(sess->cmdline);
-			printf("cmdline = %s\n", sess->cmdline);
+			//printf("cmdline = %s\n", sess->cmdline);
 		//接收数据---数据的组成：命令+空格+参数
 			str_split(sess->cmdline, sess->cmd, sess->arg, ' ');
 		//分割命令行
-			printf("cmd = %s\n",sess->cmd);
-			printf("arg = %s\n",sess->arg);
+			//printf("cmd = %s\n",sess->cmd);
+			//printf("arg = %s\n",sess->arg);
 		
 
 		int table_size = sizeof(ctrl_cmds) / sizeof(ftpcmd_t);
@@ -222,6 +222,8 @@ int port_active(session_t *sess){
 
 //判断被动模式是否被激活
 int pasv_active(session_t *sess){
+	if(sess->pasv_listen_fd != -1)
+		return 1;
 	return 0;//没有被激活
 }
 
@@ -236,19 +238,25 @@ int get_transfer_fd(session_t *sess){
 
 	int ret = 1;
 	if(port_active(sess)){
-		int sock = tcp_client( );//主动连接：客户端创建套接字
+		int sock = tcp_client( );//主动连接：客户端创建套接字////////
 		if(connect(sock, (struct sockaddr*)sess->port_addr, sizeof(struct sockaddr)) < 0){
 			ret = 0;//连接套接字
 		}
 		else{
 			sess->data_fd = sock;
-			ret = 1;
 		}
 	}
 
+
 	if(pasv_active(sess)){
-
-
+		int sock = accept(sess->pasv_listen_fd, NULL, NULL);//被动连接：客户端接受套接字
+		if(sock < 0)
+			ret = 0;
+		else{
+			close(sess->pasv_listen_fd);
+			sess->pasv_listen_fd = -1;
+			sess->data_fd = sock;
+		}
 	}
 	
     if(sess->port_addr){
@@ -269,8 +277,9 @@ static void list_common(session_t *sess){
 
 	struct stat sbuf;//保存文件的属性
 	struct dirent *dt;
+
 	while((dt = readdir(dir)) != NULL){
-		if(lstat(dt->d_name, &sbuf) < 0)
+		if(stat(dt->d_name, &sbuf) < 0)
 			continue;
 	    if(dt->d_name[0] == '.')//过滤掉隐藏文件
 			continue;
@@ -281,11 +290,11 @@ static void list_common(session_t *sess){
 		const char *perms = statbuf_get_perms(&sbuf);
 		int offset = 0;
 		offset += sprintf(buf, "%s", perms);
-		offset += sprintf(buf+offset, "%3d %-8d %-8d %8u", sbuf.st_nlink, subf.st_uid, subf.st_gid, subf.st_size);
+		offset += sprintf(buf+offset, "%3d %-8d %-8d %8u", sbuf.st_nlink, sbuf.st_uid, sbuf.st_gid, sbuf.st_size);
 
 		//后组合时间和日期
-		const char *pdate = statbuf_get_pdate(&sbuf);
-		offset += sprintf(buf+offset, "%s", pdate);
+		const char *pdate = statbuf_get_date(&sbuf);
+		offset += sprintf(buf+offset, "%s ", pdate);
 		sprintf(buf+offset, "%s\r\n", dt->d_name);
 	
 		//发送数据
@@ -296,7 +305,7 @@ static void list_common(session_t *sess){
 
 
 static void do_list(session_t *sess){
-//1.建立数据连接
+//1.建立数据连接（担当主动连接和被动连接）
 	if(get_transfer_fd(sess) == 0)
 		return;
 
@@ -304,9 +313,9 @@ static void do_list(session_t *sess){
 	ftp_reply(sess, FTP_DATACINN, "Here comes the directory listing.");
 
 //3.显示列表
-	send(sess->data_fd, "drwxr-xr-x  2 gxr116 gxr116  6 1月  22 22:36 Desktop\r\n", strlen("drwxr-xr-x  2 gxr116 gxr116  6 1月  22 22:36 Desktop\r\n"), 0);
-	send(sess->data_fd, "drwxr-xr-x. 2 gxr116 gxr116  6 1月  22 22:36 Documents\r\n", strlen("drwxr-xr-x. 2 gxr116 gxr116  6 1月  22 22:36 Documents\r\n"), 0);
-
+	//send(sess->data_fd, "drwxr-xr-x  2 gxr116 gxr116  6 1月  22 22:36 Desktop\r\n", strlen("drwxr-xr-x  2 gxr116 gxr116  6 1月  22 22:36 Desktop\r\n"), 0);
+	//send(sess->data_fd, "drwxr-xr-x. 2 gxr116 gxr116  6 1月  22 22:36 Documents\r\n", strlen("drwxr-xr-x. 2 gxr116 gxr116  6 1月  22 22:36 Documents\r\n"), 0);
+	list_common(sess);
 
 
 //4.关闭连接
@@ -318,7 +327,25 @@ static void do_list(session_t *sess){
 }
 
 
+
+
 static void do_pasv(session_t *sess){
 
+	char ip[16] = "192.168.109.136";//服务器的IP地址
+	//被动连接的端口号是自动生成的
+	sess->pasv_listen_fd = tcp_server(ip, 0);//port为0代表生成临时端口号
 
+	struct sockaddr_in address;
+	socklen_t addrlen = sizeof(struct sockaddr);
+	if(getsockname(sess->pasv_listen_fd, (struct sockaddr*)&address, &addrlen) < 0)
+		ERR_EXIT("getsockname");
+
+	unsigned short port = ntohs(address.sin_port);
+
+	int v[4] = {0};
+	sscanf(ip, "%u.%u.%u.%u", &v[0], &v[1], &v[2], &v[3]);
+	char msg[MAX_BUFFER_SIZE] = {0};
+	sprintf(msg, "Entering Passive Mode (%u,%u,%u,%u,%u,%u).", v[0],v[1],v[2],v[3], port>>8, port&0x0000ff);
+	ftp_reply(sess, FTP_PASVOK, msg);
+	
 }

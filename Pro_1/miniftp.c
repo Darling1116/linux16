@@ -20,7 +20,7 @@ int main (int argc ,  char *argv[ ]){
 		0,
 		//ftp协议状态
 		
-		NULL, -1
+		NULL, -1, -1,
 		//数据连接
 
 	};

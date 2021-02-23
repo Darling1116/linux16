@@ -7,8 +7,8 @@ int tcp_server(const char *host, unsigned short port);//对服务器而言
 //先封装一个套接字链接的tcp文件
 int tcp_client( );//对客户端而言
 
-char* statbuf_get_perms(struct stat *sbuf);
-char* statbuf_get_pdate(struct stat *sbuf);
+const char* statbuf_get_perms(struct stat *sbuf);
+const char* statbuf_get_pdate(struct stat *sbuf);
 
 
 #endif  /*  _SYSUTIL_H_  */

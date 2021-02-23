@@ -42,7 +42,6 @@ void handle_parent(session_t *sess){
 
 static void privop_pasv_get_data_sock(session_t *sess){
 
-
 }
 
 

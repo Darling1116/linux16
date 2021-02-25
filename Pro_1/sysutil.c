@@ -36,12 +36,14 @@ int tcp_client( ){
 	if((sock = socket( AF_INET, SOCK_STREAM, 0)) < 0){
 		ERR_EXIT("tcp_client");
 	}
-	/*struct sockaddr_in address;
+	/*if(port > 0){
+	struct sockaddr_in address;
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = INADDR_ANY;
-	address.sin_port = htohs(20);
-	bind(sock,(struct sockaddr*)&address, sizeof(struct sockaddr)) < 0)
+	address.sin_port = htohs(port);
+	if(bind(sock, (struct sockaddr*)&address, sizeof(struct sockaddr)) < 0)
 		ERR_EXIT("bind 20");
+	}
 	*/
 	return sock;
 }

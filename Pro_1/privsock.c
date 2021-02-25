@@ -120,7 +120,7 @@ void priv_sock_send_buf(int fd, const char *buf, unsigned int len){
 }
 void priv_sock_recv_buf(int fd, char *buf, unsigned int len){
 	unsigned int recv_len = priv_sock_get_int(fd);
-	int ret = recv(fd, buf, len, 0);
+	int ret = recv(fd, buf, recv_len, 0);
 	if(ret != recv_len){
 		ERR_EXIT("priv_sock_send_buf_error.");
 	}

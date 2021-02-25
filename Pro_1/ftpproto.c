@@ -205,6 +205,7 @@ int port_active(session_t *sess){
 	return 0;
 }
 
+
 //判断被动模式是否被激活
 int pasv_active(session_t *sess){
 
@@ -224,14 +225,15 @@ int pasv_active(session_t *sess){
 
 //获取数据连接的方法
 int get_transfer_fd(session_t *sess){
-	if((!port_active(sess)) && (!pasv_active(sess))){
+	if(!port_active(sess) && !pasv_active(sess)){
 		ftp_reply(sess, FTP_BADSENDCONN, "Use Port or Pasv first.");
 		return 0;
 	}
 
 	int ret = 1;
 	if(port_active(sess)){
-		
+
+	    /*
 		int sock = tcp_client( );//主动连接：客户端创建套接字////////
 		if(connect(sock, (struct sockaddr*)sess->port_addr, sizeof(struct sockaddr)) < 0){
 			ret = 0;//连接套接字
@@ -239,11 +241,11 @@ int get_transfer_fd(session_t *sess){
 		else{
 			sess->data_fd = sock;
 		}
-		
-		/*
+		*/
+
 		if(!get_port_fd(sess))
 			ret = 0;
-		*/
+			
 			
 	}
 
@@ -276,6 +278,7 @@ int get_transfer_fd(session_t *sess){
 int get_port_fd(session_t *sess){
 	int ret = 1;
 ////////    ftp服务进程向nobody进程发起请求（连接）
+
 	priv_sock_send_cmd(sess->child_fd, PRIV_SOCK_GET_DATA_SOCK);
 	unsigned short port = ntohs(sess->port_addr->sin_port);
 	char *ip = inet_ntoa(sess->port_addr->sin_addr);
@@ -289,6 +292,7 @@ int get_port_fd(session_t *sess){
 		ret = 0;
 	else if(res == PRIV_SOCK_RESULT_OK)
 		sess->data_fd = priv_sock_recv_fd(sess->child_fd);
+	
 	return ret;
 }
 
@@ -311,6 +315,7 @@ static void list_common(session_t *sess){
 	DIR *dir = opendir(".");//打开当前目录
 	if(dir == NULL)
 		return;
+
 
 	char buf[MAX_BUFFER_SIZE]  = {0};
 

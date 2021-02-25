@@ -1,5 +1,5 @@
 #include "privsock.h"
-
+#include "sysutil.h"
 
 //初始化通道
 void priv_sock_init(session_t *sess){
@@ -58,7 +58,7 @@ char priv_sock_get_cmd(int fd){
 		exit(EXIT_SUCCESS);
 	}
 	if(ret != sizeof(cmd)){
-		ERR_EXIT("priv_sock_get_cmd_error.");
+		ERR_EXIT("priv_sock_get_cmd error.");
 	}
 	return cmd;
 }
@@ -67,7 +67,7 @@ char priv_sock_get_cmd(int fd){
 void priv_sock_send_result(int fd, char res){
 	int ret = send(fd, &res, sizeof(res), 0);
 	if(ret != sizeof(res)){
-		ERR_EXIT("priv_sock_send_result_error.");
+		ERR_EXIT("priv_sock_send_result error.");
 	}
 
 }
@@ -81,7 +81,7 @@ char priv_sock_get_result(int fd){
 		exit(EXIT_SUCCESS);
 	}
 	if(ret != sizeof(res)){
-		ERR_EXIT("priv_sock_get_result_error.");
+		ERR_EXIT("priv_sock_get_result error.");
 	}
 	return res;
 }
@@ -90,7 +90,7 @@ char priv_sock_get_result(int fd){
 void priv_sock_send_int(int fd, int the_int){
 	int ret = send(fd, &the_int, sizeof(the_int), 0);
 	if(ret != sizeof(the_int)){
-		ERR_EXIT("priv_sock_send_int_error.");
+		ERR_EXIT("priv_sock_send_int error.");
 	}
 }
 
@@ -104,7 +104,7 @@ int priv_sock_get_int(int fd){
 		exit(EXIT_SUCCESS);
 	}
 	if(ret != sizeof(res)){
-		ERR_EXIT("priv_sock_get_int_error.");
+		ERR_EXIT("priv_sock_get_int error.");
 	}
 	return res;
 }
@@ -114,7 +114,7 @@ void priv_sock_send_buf(int fd, const char *buf, unsigned int len){
 	priv_sock_send_int(fd, len);
 	int ret = send(fd, buf, len, 0);
 	if(ret != len){
-		ERR_EXIT("priv_sock_send_buf_error.");
+		ERR_EXIT("priv_sock_send_buf error.");
 	}
 
 }

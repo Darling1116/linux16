@@ -31,20 +31,26 @@ int tcp_server (const char *host, unsigned short port){
 
 
 
-int tcp_client( ){
+int tcp_client(int port){
 	int sock;//´´½¨Ì×½Ó×Ö
 	if((sock = socket( AF_INET, SOCK_STREAM, 0)) < 0){
 		ERR_EXIT("tcp_client");
 	}
-	/*if(port > 0){
-	struct sockaddr_in address;
-	address.sin_family = AF_INET;
-	address.sin_addr.s_addr = INADDR_ANY;
-	address.sin_port = htohs(port);
-	if(bind(sock, (struct sockaddr*)&address, sizeof(struct sockaddr)) < 0)
-		ERR_EXIT("bind 20");
+
+	if(port > 0){
+		int on = 1;
+		if(setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)
+			ERR_EXIT("setsockopt");
+
+
+		struct sockaddr_in address;
+		address.sin_family = AF_INET;
+		address.sin_addr.s_addr = INADDR_ANY;
+		address.sin_port = htons(port);
+		if(bind(sock, (struct sockaddr*)&address, sizeof(struct sockaddr)) < 0)
+			ERR_EXIT("bind 20");
 	}
-	*/
+	
 	return sock;
 }
 
@@ -135,6 +141,7 @@ void send_fd(int sock_fd, int fd){
 	vec.iov_base = &sendchar;
 	vec.iov_len = sizeof(sendchar);
 	ret = sendmsg(sock_fd, &msg, 0);
+	if(ret != 1)
 		ERR_EXIT("sendmsg");
 }
 

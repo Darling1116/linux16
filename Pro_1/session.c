@@ -33,14 +33,8 @@ void begin_session(session_t *sess){
 		sess->child_fd = -1;
 		*/
 
-		//把root进程更改为nobody
-		struct passwd *pw = getpwnam("nobody");
-		if(pw == NULL)
-			ERR_EXIT("getpwname");
-		if(setegid(pw->pw_gid) < 0)
-			ERR_EXIT("setegid");
-		if(seteuid(pw->pw_uid) < 0)
-			ERR_EXIT("seteuid");
+		//把root进程更改为nobody---见minimize_privilege()函数
+	    //把root进程更改进程名为nobody
 
 		handle_parent(sess);   
 	}

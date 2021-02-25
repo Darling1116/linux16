@@ -21,6 +21,9 @@
 #include <sys/stat.h>
 #include <time.h>
 
+#include <linux/capability.h>
+#include <sys/syscall.h>
+
 #define ERR_EXIT(m)  do{ perror(m); exit(EXIT_FAILURE); } while(0)
 
 #define MAX_BUFFER_SIZE 1024

@@ -3,7 +3,6 @@
 
 void *productor(void *arg){
 	RingQueue *pq = (RingQueue*)arg;
-
 	//让生产者生产100-110之间的数据
 	int number = 100;
 	while(true){
@@ -15,7 +14,6 @@ void *productor(void *arg){
 		std::cout << "productor done..." << std::endl;
 	}
 }
-
 
 
 void *consumer(void *arg){
@@ -45,5 +43,7 @@ int main(){
 
 	delete rq; //队列用完时要删除
 	return 0;
-
 }
+
+
+

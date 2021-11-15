@@ -37,6 +37,7 @@ class ThreadPool{
 		pthread_mutex_t lock;
 		pthread_cond_t cond; //针对消费者
 
+	bool quit;
 	private:
 		void LockQueue(){
 			pthread_mutex_lock(&lock);
@@ -59,13 +60,19 @@ class ThreadPool{
 		}
 
 		void ThreadWakeUp(){
-			pthread_cond_signal(&cond);
+			//pthread_cond_signal(&cond); //一次只唤醒一个线程
+			pthread_cond_broadcast(&cond); //采用广播信号的方式，随机唤起
+		}
+
+		void ThreadsWakeUp(){
+			pthread_cond_broadcast(&cond);  //一次唤醒一批数据
 		}
 
 	
 
 	public:
-		ThreadPool(int cap):max_cap(cap){  //构造函数
+
+		ThreadPool(int cap):max_cap(cap),quit(false){  //构造函数
 		}
 
 		void Put(Task &in){ //往任务队列里面放任务---server
@@ -88,19 +95,33 @@ class ThreadPool{
 		}
 
 
+		void ThreadQuit(){ //退出之后要去通知（一批）消费者处理任务
+			if(!IsEmpty()){
+				cout << "task queue is not empty" << endl;  //任务队列为非空，还要继续分配任务
+				return;
+			}
+			quit = true;
+			ThreadsWakeUp(); //任务队列为空，通知消费者处理数据
+		}
+
+
+
 		static void *Routine(void *arg){ //内部成员函数，会默认增加this指针作为参数
 		//但被static修饰的成员函数无法访问其他成员
 		//所以在pthread_create中，把this指针作为第四个参数传进来
 			ThreadPool *this_tp = (ThreadPool*) arg;
 
-			while(true){
+			while(!this_tp->quit){
 				this_tp->LockQueue();
 				//访问临界资源：从任务队列拿任务---执行任务
+				//while(!this_tp->quit && this_tp->IsEmpty()){  //不退出并且任务队列为空
 				while(this_tp->IsEmpty()){
 					this_tp->ThreadWait();
 				}
 				Task t;
-				this_tp->Get(t);
+				//if(!this_tp->quit && !this_tp->IsEmpty()){
+					this_tp->Get(t);
+				//}
 				this_tp->UnlockQueue();
 				t.Run();
 			}

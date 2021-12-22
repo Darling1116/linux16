@@ -10,7 +10,7 @@ void *get_ticket(void *arg){
     while(1){
         if(ticket>0){
             usleep(1000);
-            printf("%d: get ticket nunber: %d\n", msg, ticket);
+            printf("%s: get ticket nunber: %d\n", msg, ticket);
             ticket--;
         }
         else{

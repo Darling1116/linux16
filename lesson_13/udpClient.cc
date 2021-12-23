@@ -2,9 +2,9 @@
 
 int main( ){
 
-udpClient *uc;
-uc->InitClient();
-uc->Start();
+udpClient uc;
+uc.InitClient();
+uc.Start();
 
 return 0;
 }

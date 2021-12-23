@@ -20,6 +20,7 @@ class udpClient{
 		int sock;
 	
 	public:
+		//这里的ip和port对应的是Server的ip、port！！！
 		udpClient(std::string _ip="127.0.0.1", int _port=8080)
 			:ip(_ip), port(_port){
 
@@ -45,7 +46,7 @@ class udpClient{
 			peer.sin_addr.s_addr = inet_addr(ip.c_str()); 
 
 			for(; ; ){
-				std::cout << "Please Enter#" << std::endl;
+				std::cout << "Please Enter# ";
 				std::cin >> msg;
 
 				if(msg == "quit"){
@@ -57,8 +58,8 @@ class udpClient{
 				char echo[128];
 				ssize_t s = recvfrom(sock, echo, sizeof(echo)-1, 0, nullptr, nullptr);
 				if(s > 0){
-					echo[s] = '\0';
-					std::cout << "server#" << echo << std::endl;
+					echo[s] = 0;
+					std::cout << "server# " << echo << std::endl;
 				}
 			}
 		}

@@ -1,6 +1,7 @@
 #pragma once
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <iostream>
 #include <string>
 
@@ -20,13 +21,14 @@ class udpServer{
 		//std::string ip;
 		int port;
 		int sock; //socket文件描述符
+		//std::map<std::string
+
 
 	public:
 		//udpClient(std::string _ip="127.0.0.1", int _port=8080)
 		udpServer(int _port)  //构造函数(带参)
 			:port(_port){  
 		}
-
 
 		void InitServer(){
 		//创建套接字-->绑定
@@ -47,7 +49,6 @@ class udpServer{
 			}
 		}
 
-
 		void Start(){
 		//服务器端：接受请求-->发送应答
 			char msg[64];
@@ -62,8 +63,17 @@ class udpServer{
 
 				if(s > 0){
 					//读取成功，发送应答
+					//返回客户端的信息(是谁发的)
+					char buf[16];
+					sprintf(buf, "%d", ntohs(end_point.sin_port));   //整数转字符串
+					std::string cli = inet_ntoa(end_point.sin_addr);  //把4个字节字符类型的ip转为点分十进制类型的
+					cli += ":";
+					cli += buf;
+
 					msg[s] = '\0';
-					std::cout << "client# " << msg << std::endl;  //输出读到的数据
+					//std::cout << "client# " << msg << std::endl;  //输出读到的数据
+
+					std::cout << cli << "# " << msg << std::endl;
 
 					std::string echo_string = msg;
 					echo_string += " [server echo!] ";
@@ -74,7 +84,6 @@ class udpServer{
 			}
 
 		}
-
 
 		~udpServer(){  //析构函数
 			close(sock);

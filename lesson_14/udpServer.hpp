@@ -21,7 +21,6 @@ class udpServer{
 		//std::string ip;
 		int port;
 		int sock; //socketÎÄ¼şÃèÊö·û
-		//std::map<std::string
 
 
 	public:

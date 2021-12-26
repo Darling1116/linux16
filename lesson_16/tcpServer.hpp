@@ -2,6 +2,7 @@
 # define __TCP_SERVER_H__
 
 #include <stdlib.h>
+#include <cstdlib>
 #include <stdio.h>
 #include <string>
 #include <unistd.h>

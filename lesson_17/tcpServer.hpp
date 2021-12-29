@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include <signal.h>
+#include <pthread.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -53,40 +54,8 @@ struct tcpServer{
 			}
 		}
 
-		void start(){
-			//4.接受套接字
-			struct sockaddr_in end_point;
-			socklen_t len = sizeof(end_point);
-			while(true){  //一直等待着客户端发起连接请求
-				int sock = accept(lsock, (struct sockaddr*)&end_point, &len);
-				if(sock < 0){
-					std::cout << "accept error!\n" << std::endl;
-					continue;
-				}
-				std::cout << "get a new link..." << std::endl;
-				char buf[16];
-				sprintf(buf, "%d", ntohs(end_point.sin_port));
-				std::string cli = inet_ntoa(end_point.sin_addr);
-				cli += ":";
-				cli += buf;
-				std::cout << "client info: " << cli << " sock: " <<sock << std::endl;
 
-				//实现多进程服务器：让多个客户端可以同时连接
-				pid_t id = fork();
-				if(id == 0){
-					if(fork() > 0){  //子进程退出(系统自动回收其资源),留下孙子进程:避免出现僵尸进程
-						exit(0);
-					}
-					//让孙子进程处理IO服务
-					close(lsock);
-					service(sock);
-					exit(0);
-				}
-				close(sock);
-			}
-		}
-
-		void service(int sock){
+		static void service(int sock){
 			char msg[1024];
 			while(true){
 				ssize_t s = recv(sock, msg, sizeof(msg)-1, 0);
@@ -110,6 +79,60 @@ struct tcpServer{
 			}
 			close(sock);
 		}
+
+
+		void start(){
+			//4.接受套接字
+			struct sockaddr_in end_point;
+			socklen_t len = sizeof(end_point);
+			while(true){  //一直等待着客户端发起连接请求
+				int sock = accept(lsock, (struct sockaddr*)&end_point, &len);
+				if(sock < 0){
+					std::cout << "accept error!\n" << std::endl;
+					continue;
+				}
+				std::cout << "get a new link..." << std::endl;
+				char buf[16];
+				sprintf(buf, "%d", ntohs(end_point.sin_port));
+				std::string cli = inet_ntoa(end_point.sin_addr);
+				cli += ":";
+				cli += buf;
+				std::cout << "client info: " << cli << " sock: " <<sock << std::endl;
+
+				//---实现多进程版本：让多个客户端可以同时连接---
+				/*
+				pid_t id = fork();
+				if(id == 0){
+					if(fork() > 0){  //子进程退出(系统自动回收其资源),留下孙子进程:避免出现僵尸进程
+						exit(0);
+					}
+					//让孙子进程处理IO服务
+					close(lsock);
+					service(sock);
+					exit(0);
+				}
+				close(sock);
+				*/
+				
+				
+				//---实现多线程版本：
+				pthread_t tid;
+				pthread_create(&tid, nullptr, serviceRoutine, (void*)&sock);  //这里新线程的逻辑参数要取地址
+				//pthread_join(tid, nullptr);
+			}
+		}
+
+
+		static void *serviceRoutine(void *arg){
+			pthread_detach(pthread_self());  //为了避免线程等待，我们使用线程分离
+
+			std::cout << "create a new thread for IO..." << std::endl;
+			int *p = (int*)arg;
+			int sock = *p;
+			service(sock);
+			delete p;
+		}
+
 
 		~tcpServer(){
 			close(lsock);

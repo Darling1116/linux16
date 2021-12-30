@@ -62,14 +62,12 @@ struct tcpServer{
 				if(s > 0){  //客户端发送信息
 					msg[s] = 0;
 					std::cout << "Client# " << msg << std::endl;
-
 					std::string echo = msg;
 					echo += "[Server echo!]";
 					send(sock, echo.c_str(), echo.size(), 0);
 				}
 				else if(s == 0){  //客户端停止发送信息
 					std::cout << "client quit..." << std::endl;
-					close(sock);
 					break;
 				}
 				else{
@@ -102,7 +100,7 @@ struct tcpServer{
 				//---实现多进程版本：让多个客户端可以同时连接---
 				/*
 				pid_t id = fork();
-				if(id == 0){
+				if(id == 0){  //子进程
 					if(fork() > 0){  //子进程退出(系统自动回收其资源),留下孙子进程:避免出现僵尸进程
 						exit(0);
 					}
@@ -112,6 +110,7 @@ struct tcpServer{
 					exit(0);
 				}
 				close(sock);
+				waitpid(id, NULL, 0);
 				*/
 				
 				
@@ -125,7 +124,6 @@ struct tcpServer{
 
 		static void *serviceRoutine(void *arg){
 			pthread_detach(pthread_self());  //为了避免线程等待，我们使用线程分离
-
 			std::cout << "create a new thread for IO..." << std::endl;
 			int *p = (int*)arg;
 			int sock = *p;

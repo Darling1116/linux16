@@ -15,6 +15,5 @@ int main(){
 		sleep(1);
 		count--;
 	}
-	//tp->ThreadQuit();
 	return 0;
 }

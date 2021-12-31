@@ -73,11 +73,9 @@ struct tcpServer{
 				cli += buf;
 				std::cout << "client info: "  << cli << std::endl; 
 				//开始通信服务
-
 				//service(sock);  
 				Task *t = new Task(sock);
 				tp->Put(*t);
-
 			}
 		}
 

@@ -71,7 +71,7 @@ struct tcpServer{
 				std::string cli = inet_ntoa(end_point.sin_addr);  //inet_ntoa:网络转为字符型
 				cli += ":";
 				cli += buf;
-				std::cout << "client info: "  << cli << std::endl; 
+				std::cout << "client info: "  << cli << " 1sock:" << sock << std::endl; 
 				//开始通信服务
 				//service(sock);  
 				Task *t = new Task(sock);

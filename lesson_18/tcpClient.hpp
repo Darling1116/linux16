@@ -44,7 +44,8 @@ struct tcpClient{
 
 		void start(){
 			char msg[1024];
-			while(true){
+			//while(true){  
+				//服务器只接受一次信息就退出了，但是客户端还在从外面read数据，所以把循环给去掉
 				std::cout << "Please Enter Message:\n" << std::endl;
 				fflush(stdout);
 				//从输入端读取信息到msg
@@ -59,7 +60,7 @@ struct tcpClient{
 						std::cout << "server echo# " << msg << std::endl;
 					}
 				}
-			}
+			//}
 		}
 
 

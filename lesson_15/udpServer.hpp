@@ -22,7 +22,7 @@ class udpServer{
 
 	public:
 		udpServer(int _port):port(_port){
-			dict.insert(std::pair<std::string, std::string>("haha", "apple"));
+			dict.insert(std::pair<std::string, std::string>("1", "apple"));
 			dict.insert(std::pair<std::string, std::string>("2", "banana"));
 			dict.insert(std::pair<std::string, std::string>("3", "orange"));
 			dict.insert(std::pair<std::string, std::string>("4", "car"));
@@ -66,7 +66,7 @@ class udpServer{
 					echo += "[Server echo!]";
 					sendto(sock, echo.c_str(), echo.size(), 0, (struct sockaddr*)&end_point, len);
 					*/
-
+					msg[s] = '\0';
 					std::string echo = "unknow";
 					auto it = dict.find(msg);
 					if(it != dict.end()){

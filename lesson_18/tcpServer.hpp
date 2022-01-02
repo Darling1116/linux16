@@ -50,6 +50,7 @@ struct tcpServer{
 				exit(4);
 			}
 			
+			//创建线程池并初始化
 			tp = new ThreadPool(10);
 			tp->ThreadPoolInit();
 		}
@@ -73,13 +74,15 @@ struct tcpServer{
 				cli += buf;
 				std::cout << "client info: "  << cli << " 1sock:" << sock << std::endl; 
 				//开始通信服务
-				//service(sock);  
+				//service(sock);
+				
+				//开始通信：新建一个任务，把该任务放到线程池中
 				Task *t = new Task(sock);
 				tp->Put(*t);
 			}
 		}
 
-
+		/*
 		void service(int sock){
 			char msg[1024];
 			while(true){
@@ -102,7 +105,7 @@ struct tcpServer{
 			}
 			close(sock);
 		}
-
+		*/
 
 		~tcpServer(){
 			close(lsock);

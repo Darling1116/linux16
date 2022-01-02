@@ -24,7 +24,9 @@ class Task{
 			dict.insert(std::make_pair<std::string, std::string>("apple", "123456"));
 		}
 
-		void Run(){  //让一个线程处理一个任务
+
+		//让一个线程处理一个任务
+		void Run(){ 
 			cout << "get a new link..." << pthread_self() << endl;
 			char msg[1024];
 			ssize_t s = recv(sock, msg, sizeof(msg)-1 ,0);

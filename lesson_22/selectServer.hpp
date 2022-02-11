@@ -44,13 +44,21 @@ struct SelectServer{
 			}
 			else{
 				fd_array[i] = sock;
-				std::cout << "fd: " << sock << "add to select...\n" << std::endl;
+				std::cout << "fd: " << sock << " add to select...\n" << std::endl;
+			}
+		}
+
+
+		void DefFdFromArray(int index){  //利用文件描述符在fd_array中的下标位置
+			if(index>=0 && index<NUM){
+				fd_array[index] = DFL_FD;
 			}
 		}
 
 
 		void HandlerEvent(fd_set *rfds){
 			for(int i=0; i<NUM; i++){
+
 				if(fd_array[i] == DFL_FD){  //不是合法文件描述符
 					continue;
 				}  
@@ -68,9 +76,24 @@ struct SelectServer{
 							AddFdToArray(sock);
 						}
 					}
-					//2.读数据事件就绪
-					else{
 
+					//2.读数据事件就绪
+					//本质是把数据从内核传到用户:从用户缓冲区传入到内核缓冲区
+					else{
+						char buf[1024];
+						ssize_t s = recv(fd_array[i], buf, sizeof(buf), 0);  //fd_array[i]里面放的就是套接字
+						if(s > 0){
+							std::cout << "client# " << buf << std::endl;
+						}
+						else if(s == 0){  
+							std::cout << "client quit...\n" << std::endl;
+							close(fd_array[i]);
+							DefFdFromArray(i);  //把该文件描述符从辅助数组里删除
+						}
+						else{
+							std::cout << "recv data error...\n" << std::endl;
+							close(fd_array[i]);
+						}
 					}
 				}
 			}
@@ -85,7 +108,7 @@ struct SelectServer{
 			//每隔5秒检测一次：此后timeout会变成0，立即返回，不等待外部事件的发生，为非阻塞轮询
 			//struct timeval timeout = {5, 0};  
 
-			for(; ;){
+			for(;;){
 				//---读操作---
 				fd_set rfds;
 				//对select中的参数进行了重新设定！！！
@@ -101,13 +124,13 @@ struct SelectServer{
 						}
 					}
 				}
-				std:cout << std::endl;
+				std:cout << "\n" << std::endl;
 				//FD_SET(lsock, &rfds);
+	
 				std::cout << "begin select...\n" << std::endl;
-
-				//struct timeval timeout = {5, 0};  //每次select的等待时间都为5秒，为阻塞轮询
+				struct timeval timeout = {10, 0};  //每次select的等待时间都为5秒，为阻塞轮询
 				//timeout为空，表示select一直被阻塞，直到某个文件描述符状态发生了变化
-				switch(select(maxfd+1, &rfds, nullptr, nullptr, /*timeout*/ nullptr)){
+				switch(select(maxfd+1, &rfds, nullptr, nullptr, &timeout)){
 					case 0:  //超过timeout，没有返回
 						std::cout << "timeout...\n" << std::endl;
 						break;

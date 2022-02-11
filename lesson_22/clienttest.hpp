@@ -39,6 +39,23 @@ struct client{
 				std::cout << "connect error!" << std::endl;
 				exit(3);
 			}
+
+			char msg[1024];
+			while(true){
+				std::cout << "Please Enter Message# " << std::endl;
+				size_t s = read(0, msg, sizeof(msg)-1);
+
+				if(s > 0){  //输入信息成功
+					msg[s-1] = 0;
+					send(sock, msg, sizeof(msg)-1, 0);  //发送信息
+
+					size_t ss = recv(sock, msg, sizeof(msg)-1, 0);  //接受应答成功
+					if(ss > 0){
+						msg[ss] = 0;
+						std::cout << "server echo# \n" << msg << std::endl;
+					}
+				}
+			}
 		}
 
 		~client(){

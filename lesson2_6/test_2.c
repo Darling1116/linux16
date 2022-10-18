@@ -10,7 +10,7 @@ int main(){
 int fd[2] = {0};  //定义一个文件描述符数组:fd[0]--read,fd[1]--write
 int pi = pipe(fd);  //创建匿名管道
 if(pi != 0){
-	printf("pipe erroe!\n");
+	printf("pipe error!\n");
 	exit(1);
 }
 

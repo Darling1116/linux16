@@ -16,13 +16,13 @@ int main(){
 		printf("%s", cmd_line);
 		fgets(cmd, SIZE, stdin);  //命令行参数通过标准输入写入cmd
 		printf("%s", cmd);
-		cmd[strlen(cmd)-1] = '\0';
+		cmd[strlen(cmd)-1] = '\0';  //把换行符替换为结束标志\0
 
-		char* argv[NUM];  //定义一个数组，用来存放解析的结果
-		argv[0] = strtok(cmd, " ");  //以空格来分割字符串
+		char* argv[NUM];  //定义一个字符串数组，用来存放解析的结果
+		argv[0] = strtok(cmd, " ");  //以空格来分割字符串，把第一个子串放在argv[0]中
 		int i= 1;
 		do{
-			argv[i] = strtok(NULL, " ");
+			argv[i] = strtok(NULL, " ");  //分割剩下的字符串
 			if(argv[i] == NULL){
 				break;
 			}

@@ -19,6 +19,7 @@ if(fp==NULL){
 const char* msg = "hello world.\n";
 int count = 5;
 while(count!=0){
+	//fputc(fp);
 	fwrite(msg, strlen(msg), 1, fp);
 	count--;
 }

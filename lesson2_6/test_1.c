@@ -34,7 +34,7 @@ else{
 	while(1){
 		ssize_t s = read(fd[0], buf ,sizeof(buf)-1);   //s是读取的长度
 		if(s > 0){
-			buf[s] = 0;
+			buf[s] = 0;  //!!!
 			printf("father get message: %s\n", buf);
 		}
 	}

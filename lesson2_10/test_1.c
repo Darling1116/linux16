@@ -32,6 +32,6 @@ int main(int argc, char* argv[]){
 	*/
 
 	// raise(2);  //给自己发信号
-	// abort();
+	// abort();  //使当前进程接受到信号而异常终止
 
 }

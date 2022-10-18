@@ -24,7 +24,7 @@ if(s < 0){
 	exit(1);
 }
 
-buf[s] = 0;
+buf[s] = 0;  //
 printf("%s", buf);
 
 close(fd);

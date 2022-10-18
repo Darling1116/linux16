@@ -30,7 +30,7 @@ void handler(int signo){
 
 int main(){
 
-//ctrl+C之后，2号信号递达
+//ctrl+C之后，2号信号产生
 //此时可以使用信号捕捉，继续获取其后的pending表的状态信息
 signal(2, handler);
 
@@ -43,6 +43,7 @@ sigemptyset(&block);
 sigemptyset(&oblock);
 sigaddset(&block, 2);
 
+//在设置信号屏蔽字之前，先把原来的信号屏蔽字备份到oblock中
 sigprocmask(SIG_SETMASK, &block, &oblock);
 
 
@@ -51,7 +52,7 @@ sigset_t pending;
 int count = 0;
 while(1){
 	sigemptyset(&pending);
-	sigpending(&pending);  //获取当前进程的pending信号集
+	sigpending(&pending);  //获取当前进程的未决pending信号集
 	show_pending(&pending);
 	sleep(1);
 	count++;

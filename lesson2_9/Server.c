@@ -1,7 +1,7 @@
 #include "common.h"
 
 //实现共享内存测试的代码
-//必须保证通信的两端使用的是同一块共享内存
+//key保证通信的两端使用的是同一块共享内存
 
 int main(){
 key_t key = ftok(PATHNAME, PROJ_ID);

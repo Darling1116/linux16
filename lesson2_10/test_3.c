@@ -14,7 +14,7 @@ void handler(int signo){
 }
 
 int main(){
-	signal(8, handler);
+	signal(8, handler);  //SIGSEGV
 	//int res = 10/0;
 	sleep(2);
 	int *p = NULL;

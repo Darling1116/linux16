@@ -3,6 +3,7 @@
 
 
 volatile int flag = 0;
+//int flag = 0;
 
 void handler(int sig){
 	flag = 1;

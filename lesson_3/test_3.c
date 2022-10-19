@@ -17,7 +17,7 @@ int main(){
   pthread_t tid;
   pthread_create(&tid, NULL, thread_run, (void*)"thread 1");
 
-  void *code;
+  void *code;  //获取线程的返回值
   pthread_join(tid, &code);  //waiting..huishouziyuan
   printf("result is %d\n", code);
   return 0;

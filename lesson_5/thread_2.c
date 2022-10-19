@@ -11,7 +11,7 @@ void *get_ticket(void *arg){
         if(ticket>0){
             usleep(1000);
             printf("%s: get ticket nunber: %d\n", msg, ticket);
-            ticket--;
+            ticket--;  //非原子操作
         }
         else{
             break;

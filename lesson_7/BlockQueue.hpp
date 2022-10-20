@@ -100,7 +100,8 @@ class BlockQueue{
 		void Get(int &out){  //消费者
 			LockQueue();
 			
-			if(IsEmpty()){  //队列为空，唤醒生产者生产，消费者等待；否则，消费者消费
+			//if(IsEmpty()){  //队列为空，唤醒生产者生产，消费者等待；否则，消费者消费
+			if(q.size() <= cap){
 				WakeUpProductor();
 				std::cout << "queue is empty, notify productor, consumer stop" << std::endl;
 				ConsumerWait();

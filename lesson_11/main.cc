@@ -8,7 +8,8 @@ int main(){
 
 	//server
 	int count = 20;
-	while(true){
+	//while(true){
+	while(count){
 		int _b = rand()%10+1;
 		Task t(_b);
 		tp->Put(t);

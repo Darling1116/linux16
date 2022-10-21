@@ -117,6 +117,7 @@ class ThreadPool{
 			pthread_t t;
 			for(int i=0; i<max_cap; i++){
 				pthread_create(&t, nullptr, Routine, this); ////×¢Òâ£¡£¡£¡
+				pthread_detach(t);
 			}
 		}
 

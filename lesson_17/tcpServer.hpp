@@ -68,10 +68,12 @@ struct tcpServer{
 				}
 				else if(s == 0){  //客户端停止发送信息
 					std::cout << "client quit..." << std::endl;
+					close(sock);
 					break;
 				}
 				else{
 					std::cout << "recv client data error.." << std::endl;
+					close(sock);
 					break;
 				}
 			}
@@ -98,7 +100,6 @@ struct tcpServer{
 				std::cout << "client info: " << cli << " sock: " <<sock << std::endl;
 
 				//---实现多进程版本：让多个客户端可以同时连接---
-				/*
 				pid_t id = fork();
 				if(id == 0){  //子进程
 					if(fork() > 0){  //子进程退出(系统自动回收其资源),留下孙子进程:避免出现僵尸进程
@@ -110,13 +111,12 @@ struct tcpServer{
 					exit(0);
 				}
 				close(sock);
-				waitpid(id, NULL, 0);
-				*/
-				
+				//waitpid(-1, NULL, 0);
+
 				
 				//---实现多线程版本：
-				pthread_t tid;
-				pthread_create(&tid, nullptr, serviceRoutine, (void*)&sock);  //这里新线程的逻辑参数要取地址
+				//pthread_t tid;
+				//pthread_create(&tid, nullptr, serviceRoutine, (void*)&sock);  //3这里新线程的逻辑参数要取地址
 				//pthread_join(tid, nullptr);
 			}
 		}

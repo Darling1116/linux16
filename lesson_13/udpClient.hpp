@@ -43,7 +43,7 @@ class udpClient{
 			//socklen_t len = sizeof(peer);
 			peer.sin_family = AF_INET;
 			peer.sin_port = htons(port);  
-			peer.sin_addr.s_addr = inet_addr(ip.c_str()); 
+			peer.sin_addr.s_addr = inet_addr(ip.c_str());   //ip×ª»»ÎªÍøÂçµØÖ·6
 
 			for(; ; ){
 				std::cout << "Please Enter# ";

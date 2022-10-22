@@ -53,7 +53,7 @@ class udpServer{
 			for( ; ; ){
 				msg[0] = '\0';
 				struct sockaddr_in end_point;
-				socklen_t len = sizeof(end_point);  //网络协议地址的长度，类型为socklen_t
+				socklen_t  = sizeof(end_point);  //网络协议地址的长度，类型为socklen_t
 
 				ssize_t s = recvfrom(sock, msg, sizeof(msg)-1, 0, 
 					(struct sockaddr*)&end_point, &len);  //从远端读数据，成功返回值>0，返回类型为ssize_t

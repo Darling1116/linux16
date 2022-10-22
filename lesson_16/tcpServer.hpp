@@ -85,7 +85,7 @@ struct tcpServer{
 			//tcpServer一旦开始工作，就一直等待着接受客户端发送建立连接的请求
 			while(true){
 				int sock = accept(lsock, (struct sockaddr*)&end_point, &len);
-				if(sock < 0){
+				if(sock < 0){  //lsock：获取新链接		sock:服务新链接
 					std::cout << "accept error!\n" << std::endl;
 					continue;
 				}

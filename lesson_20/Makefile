@@ -1,5 +1,5 @@
 .PHONY:all
-all: httpServer 6httpClient
+all: httpServer httpClient
 
 httpServer:httpServer.cc
 	g++ -o $@ $^ -std=c++11 -lpthread

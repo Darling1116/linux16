@@ -12,8 +12,14 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include <fstream>
+
+using namespace std;
+
 
 #define BACKLOG 5
+#define PAGE "index.html"
+
 
 struct server{
 	private:
@@ -35,7 +41,7 @@ struct server{
 			std::cout << "lsock:" << lsock << std::endl;
 
 			struct sockaddr_in local;
-			bzero(&local, sizeof(local));  //清零
+			//bzero(&local, sizeof(local));  //清零
 			local.sin_family = AF_INET;
 			local.sin_port = htons(port);
 			local.sin_addr.s_addr = INADDR_ANY;
@@ -85,17 +91,51 @@ struct server{
 			}
 		}
 
+
 		void EchoHttp(int sock){
-			char request[1024];
-			while(true){
-				ssize_t s = recv(sock, request, sizeof(request)-1, 0);
-				/////
+			char buffer[1024];
+			recv(sock, buffer, sizeof(buffer), 0);
+
+			std::cout << "############ http request begin ##############" << std::endl;
+			std::cout << buffer << std::endl;
+
+			//使用ifstream一次读取文件的内容！！！
+			std::ifstream in(PAGE);
+			if(in.is_open()){
+				in.seekg(0, std::ios::end);
+				size_t len = in.tellg();
+				in.seekg(0, std::ios::beg);
+				char* file = new char[len];
+				in.read(file, len);  //从PAGE中读内容到file文件中
+				in.close();
+
+				//std::cout << file << std::endl;
+				
+				//服务器给客户端发送响应
+				std::string status_line = "http/1.0 307 Temporary Redirect\n"; 
+				std::string response_header = "Content_Length: " + std::to_string(len);  
+				response_header += "\n";
+				response_header += "location: http://www.qq.com/";
+				response_header += "\n";
+				std::string blank = "\n";  
+
+				send(sock, status_line.c_str(), status_line.size(), 0);  //响应行
+				send(sock, response_header.c_str(), response_header.size(), 0);  //响应报头
+				send(sock, blank.c_str(), blank.size(), 0);  //空格
+
+				send(sock, file, len, 0);  //响应正文		
+				delete []file;
 			}
+			std::cout << "############ http request end ###############" << std::endl;
 			close(sock);
+			exit(0);
 		}
+	
 
 
 		~server(){
 			close(lsock);
 		}
 };
+
+#endif

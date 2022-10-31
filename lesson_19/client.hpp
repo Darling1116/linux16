@@ -73,7 +73,7 @@ struct client{
 			std::cout << "result: " << rsp.result <<std::endl;
 		}
 
-
+		/*
 		void cal(int sock){
 			request_t rq;  //读取数据缓冲区
 			response_t rsp;  
@@ -116,6 +116,7 @@ struct client{
 			close(sock);  
 			}
 		}
+		*/
 
 		~client(){
 			close(sock);

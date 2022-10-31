@@ -9,7 +9,8 @@ struct SelectServer{
 	private:
 		int lsock; //监听套接字
 		int port;
-		int fd_array[NUM];  //辅助数组：储存fd_set *rfds的内容，把所有文件描述符都先储存在该数组里面
+		int fd_array[NUM];  //存放的是需要等待的fd
+		//辅助数组：储存fd_set *rfds的内容，把所有文件描述符都先储存在该数组里面
 	
 	public:
 		SelectServer(int _port):port(_port){
@@ -78,7 +79,7 @@ struct SelectServer{
 					}
 
 					//2.读数据事件就绪
-					//本质是把数据从内核传到用户:从用户缓冲区传入到内核缓冲区
+					//本质是把数据从内核传到用户
 					else{
 						char buf[1024];
 						ssize_t s = recv(fd_array[i], buf, sizeof(buf), 0);  //fd_array[i]里面放的就是套接字
@@ -109,6 +110,7 @@ struct SelectServer{
 			//struct timeval timeout = {5, 0};  
 
 			for(;;){
+				
 				//---读操作---
 				fd_set rfds;
 				//对select中的参数进行了重新设定！！！
@@ -138,7 +140,7 @@ struct SelectServer{
 						std::cout << "select error...\n" << std::endl;
 						break;
 					default:  //select执行成功，返回文件描述符改变的个数
-						HandlerEvent(&rfds);
+						HandlerEvent(&rfds);  //等待就绪，准备读操作！！
 						break;
 				}
 			}	

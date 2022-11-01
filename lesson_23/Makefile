@@ -1,5 +1,12 @@
-polltest:polltest.cc
+.PHONY:all
+all: pollServer pollClient
+
+pollServer:pollServer.cc
 	g++ -o $@ $^ -std=c++11 -lpthread
+
+pollClient:pollClient.cc
+	g++ -o $@ $^ -std=c++11 -lpthread
+
 .PHONY:clean
 clean:
-	rm -f polltest
+	rm -f pollServer pollClient

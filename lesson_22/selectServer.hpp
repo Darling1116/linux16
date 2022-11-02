@@ -107,7 +107,7 @@ struct SelectServer{
 			//int maxfd = lsock;  
 			int maxfd = DFL_FD;
 			//每隔5秒检测一次：此后timeout会变成0，立即返回，不等待外部事件的发生，为非阻塞轮询
-			//struct timeval timeout = {5, 0};  
+			struct timeval timeout = {5, 0};  
 
 			for(;;){
 				
@@ -130,7 +130,7 @@ struct SelectServer{
 				//FD_SET(lsock, &rfds);
 	
 				std::cout << "begin select...\n" << std::endl;
-				struct timeval timeout = {10, 0};  //每次select的等待时间都为5秒，为阻塞轮询
+				//struct timeval timeout = {10, 0};  //每次select的等待时间都为5秒，为阻塞轮询
 				//timeout为空，表示select一直被阻塞，直到某个文件描述符状态发生了变化
 				switch(select(maxfd+1, &rfds, nullptr, nullptr, &timeout)){
 					case 0:  //超过timeout，没有返回
